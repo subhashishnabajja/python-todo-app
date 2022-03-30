@@ -1,37 +1,26 @@
 import tkinter as tk
 from tkinter import ttk
 from components.Todo import TodoFrame
+class MainApplication(tk.Tk):
 
+    def __init__(self):
+        super().__init__()
 
-
-
-class MainApplication ():
-
-    def __init__ (self, master):
-
-        # Set up the master widgets
-        self.master = master
-        self.notebook = ttk.Notebook(master)
-        self.notebook.pack(fill='both', expand=True)
-
-
-        # Creating the todo frame
+        # Creating the notebook frame
+        self.notebook = ttk.Notebook(self)
+        self.notebook.pack(fill = "both", expand = True)
+    
+        # Todo Frame
         self.TodoFrame = TodoFrame(self.notebook)
-        self.TodoFrame2 = TodoFrame(self.notebook)
-        self.notebook.add(self.TodoFrame.widget, text = "Todo")
+        self.TodoFrame.pack(fill="both", expand=True)
+
+        self.notebook.add(self.TodoFrame, text = "Todo")
 
 
 
 
 
-
-
-
-
-root = tk.Tk()
-
-root.title("Todo App")
-root.minsize(640, 320)
-
-main = MainApplication(root)
-root.mainloop()
+if __name__ == "__main__":
+    root = MainApplication()
+    root.geometry("640x500")
+    root.mainloop()
