@@ -14,7 +14,10 @@ class MainApplication(tk.Tk):
         self.TodoFrame = TodoFrame(self.notebook)
         self.TodoFrame.pack(fill="both", expand=True)
 
+       
         self.notebook.add(self.TodoFrame, text = "Todo")
+
+    
 
 
 
