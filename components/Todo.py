@@ -3,38 +3,68 @@ import datetime
 from tkinter import ttk
 from database import db
 
+
 TODO = db.TODO()
+
 class TodoFrame(tk.Frame):
 
     def __init__(self, container):
         super().__init__(container)
-        self.state = {"todos":[], "date": tk.StringVar(value=datetime.datetime.now)}
-        self.todos = tk.StringVar(value=self.state["todos"])
 
-        self.DatePicker = DatePicker(self,  onChange=self.handleDateChange)
+        # State variables
+        self.state = {"todos": [ todo[1] for todo in TODO.getTodos(date = datetime.datetime.now().strftime("%d/%m/%y"))], "date": tk.StringVar(value=datetime.datetime.now().strftime("%d/%m/%y"))}
+        self.input = tk.StringVar()
+        self.todos = tk.StringVar(value = self.state["todos"])
+        self.undoStack = []
+
+        print(self.todos.get())
+        
+        # Datepicker widget
+        self.DatePicker = DatePicker(self,  date = self.state["date"], onChange=self.handleDateChange)
         self.DatePicker.pack(fill="both")
 
-        self.TodoInput = TodoInput(self, onSubmit=self.handleTodoText)
+        # Todo input widget
+        self.TodoInput = TodoInput(self, input = self.input ,onSubmit=self.handleTodoText)
         self.TodoInput.pack(fill = "both")
 
-        self.TodoList = TodoList(self, list=self.todos, onDone=self.handleDone)
+        # TodoList widget
+        self.TodoList = TodoList(self, list= self.todos, onDone = self.handleDone)
         self.TodoList.pack(fill = "both", expand=True)
 
+    # Function runs on todo submit
     def handleTodoText (self, text):
         self.state["todos"].append(text)
         self.todos.set(self.state["todos"])
-        print(self.state)
-        TODO.addTodo(len(self.state["todos"]), text, self.state["date"])
+        print(self.input.get())
+        TODO.addTodo(str(datetime.datetime.now()), text, self.state["date"].get())
 
+    # Function runs on date change
     def handleDateChange(self, currDate):
-        self.state["date"] = currDate
-        print(self.state)
-    
+        # Reset to empty list
+        self.state["todos"] = []
+        self.todos.set([])
 
-    def handleDone(self, currTodo):
-        todos = self.state["todos"]
-        todos.remove(currTodo)
-        self.todos.set(todos)
+        # Update the list with fresh data
+        self.state["todos"] = [todo[1] for todo in TODO.getTodos(date = self.state["date"].get())]
+        self.todos.set(self.state["todos"])
+
+        self.state["date"].set(currDate)
+        print(self.state)
+
+    
+    # Function runs on todo is marked as done
+    def handleDone(self, index):
+        currTodo = self.state["todos"][index]
+
+        # Push the todo to undo stack
+        self.undoStack.append(currTodo)
+
+        self.state["todos"].remove(currTodo)
+        TODO.removeTodo(date = self.state["date"].get())
+        self.todos.set(self.state["todos"])
+
+
+
 
 
 
@@ -44,7 +74,7 @@ class TodoFrame(tk.Frame):
 
 class DatePicker (tk.Frame):
 
-    def __init__(self, container, onChange = None):
+    def __init__(self, container, date = None, onChange = None):
         super().__init__(container)
         # States
         self.onChange = onChange
@@ -55,8 +85,7 @@ class DatePicker (tk.Frame):
         """"
         Entry Widget Config
         """
-        self.date = tk.StringVar(value = str(datetime.datetime.now().strftime("%d/%m/%y")))
-        self.onChange(self.date.get())
+        self.date = date
         self.entry = tk.Entry(self, textvariable = self.date, justify="center")
         self.entry.place(rely = .5, relx=.5, relwidth = .55 ,relheight= .5, anchor= tk.CENTER)
 
@@ -87,13 +116,13 @@ class DatePicker (tk.Frame):
 
 class TodoInput (tk.Frame):
 
-    def __init__(self, container, onSubmit=None ):
+    def __init__(self, container, input = None, onSubmit=None ):
         super().__init__(container)
         self.onSubmit = onSubmit
         self.todos = []
         self.configure(bg="pink", height = 70)
         ttk.Style().configure('pad.TEntry', padding='5 5 5 5')
-        self.inputText = tk.StringVar()
+        self.inputText = input
         self.input = ttk.Entry(self, font = ("Arial 14"), style='pad.TEntry', textvariable=self.inputText)
         self.input.bind("<Return>", self.handleAddTodo)
         self.input.place(relx = .45, rely = .5, relwidth = .50, anchor = tk.CENTER)
@@ -111,16 +140,17 @@ class TodoInput (tk.Frame):
 
 class TodoList (tk.Frame):
 
-    def __init__(self, container, list=[], onDelete = None, onDone = None):
+    def __init__(self, container, list=[], onDone = None):
         super().__init__(container)
         self.configure(bg ="green")
         self.ListFrame = tk.Frame(self, bg="blue")
         self.ListFrame.place(relheight=.8, relwidth=1)
 
         self.onDone = onDone
+   
         self.list = list
 
-     
+
 
         self.listbox = tk.Listbox(
             self.ListFrame,
@@ -135,13 +165,13 @@ class TodoList (tk.Frame):
         self.ActionsFrame.place(relheight=.2, rely=.8, relwidth=1)
 
         self.doneBtn = tk.Button(self.ActionsFrame, text = "Done", command=self.handleDone)
-        self.doneBtn.pack(side=tk.LEFT)
+        self.doneBtn.pack()
 
-        self.undoBtn = tk.Button(self.ActionsFrame, text = "Undo")
-        self.undoBtn.pack(side=tk.RIGHT)
 
 
     def handleDone(self):
         if self.listbox.curselection():
-            selection = self.listbox.get(self.listbox.curselection())
-            self.onDone(selection)
+            selection = self.listbox.curselection()
+    
+            self.onDone(selection[0])
+
