@@ -9,7 +9,7 @@ class DatePicker (tk.Frame):
         self.onChange = onChange
 
 
-        self.configure(bg="red", height=50)
+        self.configure( height=50)
 
         """"
         Entry Widget Config

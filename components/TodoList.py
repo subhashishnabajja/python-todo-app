@@ -8,8 +8,8 @@ class TodoList (tk.Frame):
 
     def __init__(self, container, list=[], onDone = None, onDelete = None):
         super().__init__(container)
-        self.configure(bg ="green")
-        self.ListFrame = tk.Frame(self, bg="blue")
+
+        self.ListFrame = tk.Frame(self)
         self.ListFrame.place(relheight=.8, relwidth=1)
 
         self.onDone = onDone
@@ -44,7 +44,7 @@ class TodoList (tk.Frame):
         self.treeview.pack(fill="both", expand=True)
 
 
-        self.ActionsFrame = tk.Frame(self, bg="cyan")
+        self.ActionsFrame = tk.Frame(self)
         self.ActionsFrame.place(relheight=.2, rely=.8, relwidth=1)
 
         self.doneBtn = tk.Button(self.ActionsFrame, text = "Done", command=self.handleDone)

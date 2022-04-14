@@ -7,7 +7,7 @@ class TodoInput (tk.Frame):
         super().__init__(container)
         self.onSubmit = onSubmit
         self.todos = []
-        self.configure(bg="pink", height = 70)
+        self.configure(height = 70)
         ttk.Style().configure('pad.TEntry', padding='5 5 5 5')
         self.inputText = input
         self.input = ttk.Entry(self, font = ("Arial 14"), style='pad.TEntry', textvariable=self.inputText)

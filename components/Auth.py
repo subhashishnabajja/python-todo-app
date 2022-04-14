@@ -67,6 +67,8 @@ class AuthForm(tk.Tk):
             self.loginButtton = tk.Button(self, text="Login", command=self.checkUser)
             self.loginButtton.pack()
 
+            self.protocol("WM_DELETE_WINDOW", self.handleClose)
+
             
 
     def createUser(self):
@@ -92,5 +94,6 @@ class AuthForm(tk.Tk):
                 self.destroy()
                 quit()
 
-
+    def handleClose(self):
+        quit()
 

@@ -50,11 +50,10 @@ class TodoFrame(tk.Frame):
     def handleDateChange(self, currDate):
         # Reset to empty list
         self.state["todos"] = []
-        self.todos.set([])
 
         # Update the list with fresh data
         self.state["todos"] = TODO.getTodos(date = self.state["date"].get())
-        self.todos.set(self.state["todos"])
+
         self.TodoList.updateTreeview(list = self.state["todos"])
 
         self.state["date"].set(currDate)
