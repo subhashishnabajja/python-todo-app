@@ -13,7 +13,7 @@ class TodoFrame(tk.Frame):
         super().__init__(container)
 
         # State variables
-        self.state = {"todos": [ todo for todo in TODO.getTodos(date = datetime.datetime.now().strftime("%d/%m/%y"))], "date": tk.StringVar(value=datetime.datetime.now().strftime("%d/%m/%y"))}
+        self.state = {"todos": TODO.getTodos(date = datetime.datetime.now().strftime("%d/%m/%y")), "date": tk.StringVar(value=datetime.datetime.now().strftime("%d/%m/%y"))}
         print(self.state["todos"])
         self.input = tk.StringVar()
         self.todos = tk.StringVar(value = self.state["todos"])
@@ -201,17 +201,20 @@ class TodoList (tk.Frame):
 
 
     def handleDone(self):
-        cur = self.listbox.focus()
-
-        values = self.listbox.item(cur)['values']
-        self.onDone({
-            "key": self.listbox.focus(),
-            "values": [
-                values[0],
-                0 if values[1] == "❎" else "1",
-                values[2]
-            ]
-        })
+        try:
+            cur = self.listbox.focus()
+            
+            values = self.listbox.item(cur)['values']
+            self.onDone({
+                "key": self.listbox.focus(),
+                "values": [
+                    values[0],
+                    0 if values[1] == "❎" else "1",
+                    values[2]
+                ]
+            })
+        except:
+            print("Nothing is selected")
     
         
 
