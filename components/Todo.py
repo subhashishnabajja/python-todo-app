@@ -1,3 +1,4 @@
+from re import M
 import tkinter as tk
 import datetime 
 from tkinter import ttk
@@ -13,12 +14,12 @@ class TodoFrame(tk.Frame):
 
         # State variables
         self.state = {"todos": [ todo for todo in TODO.getTodos(date = datetime.datetime.now().strftime("%d/%m/%y"))], "date": tk.StringVar(value=datetime.datetime.now().strftime("%d/%m/%y"))}
-        print(self.state)
+        print(self.state["todos"])
         self.input = tk.StringVar()
         self.todos = tk.StringVar(value = self.state["todos"])
         self.undoStack = []
+    
 
-        print(self.todos.get())
         
         # Datepicker widget
         self.DatePicker = DatePicker(self,  date = self.state["date"], onChange=self.handleDateChange)
@@ -29,15 +30,18 @@ class TodoFrame(tk.Frame):
         self.TodoInput.pack(fill = "both")
 
         # TodoList widget
-        self.TodoList = TodoList(self, list= self.todos, onDone = self.handleDone)
+        self.TodoList = TodoList(self, list= self.state["todos"], onDone = self.handleDone)
         self.TodoList.pack(fill = "both", expand=True)
 
     # Function runs on todo submit
     def handleTodoText (self, text):
-        self.state["todos"].append(text)
-        self.todos.set(self.state["todos"])
-        print(self.input.get())
-        TODO.addTodo(str(datetime.datetime.now()), text, self.state["date"].get())
+       
+        # self.todos.set(self.state["todos"])
+        # print(self.input.get())
+        TODO.addTodo(text, self.state["date"].get(), datetime.datetime.now().strftime("%I:%M"))
+        self.state["todos"] =[todo for todo in TODO.getTodos(date = self.state["date"].get())]
+        self.TodoList.updateTreeview(list = self.state["todos"])
+      
 
     # Function runs on date change
     def handleDateChange(self, currDate):
@@ -46,23 +50,32 @@ class TodoFrame(tk.Frame):
         self.todos.set([])
 
         # Update the list with fresh data
-        self.state["todos"] = [todo[1] for todo in TODO.getTodos(date = self.state["date"].get())]
+        self.state["todos"] = [todo for todo in TODO.getTodos(date = self.state["date"].get())]
         self.todos.set(self.state["todos"])
+        self.TodoList.updateTreeview(list = self.state["todos"])
 
         self.state["date"].set(currDate)
-        print(self.state)
+
 
     
     # Function runs on todo is marked as done
-    def handleDone(self, index):
-        currTodo = self.state["todos"][index]
+    def handleDone(self, item):
+     
+        index = item['values'][0] - 1
+    
+
+        TODO.toggleDone(id = self.state["todos"][index][0])
+        self.state["todos"] = [todo for todo in TODO.getTodos(date = self.state["date"].get())]
+        self.TodoList.updateTreeview(list = self.state["todos"])
+        #currTodo = self.state["todos"][index]
 
         # Push the todo to undo stack
-        self.undoStack.append(currTodo)
+        #self.undoStack.append(currTodo)
 
-        self.state["todos"].remove(currTodo)
-        TODO.removeTodo(date = self.state["date"].get())
-        self.todos.set(self.state["todos"])
+        #self.state["todos"].remove(currTodo)
+        #TODO.removeTodo(date = self.state["date"].get())
+    
+        #self.todos.set(self.state["todos"])
 
 
 
@@ -153,11 +166,28 @@ class TodoList (tk.Frame):
 
 
 
-        self.listbox = tk.Listbox(
+        self.listbox = ttk.Treeview(
             self.ListFrame,
-            listvariable=self.list,
-            height=6,
-            selectmode='extended')
+            columns=("No.","Time", "Status", "Description"),
+            show="headings"
+        )
+
+        # Defining the heading for columns
+        self.listbox.heading("No.", text="No.")
+        self.listbox.heading("Time", text="Time")
+        self.listbox.heading("Status", text="Status")
+        self.listbox.heading("Description", text="Description")
+
+        # Defining columns size
+        self.listbox.column("No.", width=2)
+        self.listbox.column("Time", width=5)
+        self.listbox.column("Status", width=5)
+        self.listbox.column("Description", width=400)
+
+
+        # Insert todos to treeview
+        self.updateTreeview(list = self.list)
+
 
         self.listbox.pack(fill="both", expand=True)
 
@@ -171,8 +201,33 @@ class TodoList (tk.Frame):
 
 
     def handleDone(self):
-        if self.listbox.curselection():
-            selection = self.listbox.curselection()
+        cur = self.listbox.focus()
+
+        values = self.listbox.item(cur)['values']
+        self.onDone({
+            "key": self.listbox.focus(),
+            "values": [
+                values[0],
+                0 if values[1] == "❎" else "1",
+                values[2]
+            ]
+        })
     
-            self.onDone(selection[0])
+        
+
+    def updateTreeview(self, list = [],mode = "OVERIDE"):
+        if mode == "OVERIDE":
+            self.listbox.delete(*self.listbox.get_children())
+          
+            for i in range(len(list)):
+                self.listbox.insert("", tk.END, values=(
+                    i + 1,
+                    list[i][3],
+                    "✅" if list[i][4] == 1 else "❎" ,
+                    list[i][1] 
+                ))
+            
+    
+
+    
 
