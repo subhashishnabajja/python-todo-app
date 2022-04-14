@@ -37,6 +37,7 @@ if __name__ == "__main__":
   
 
     root = MainApplication()
+    root.title("Todo App")
     root.geometry("640x500")
     root.mainloop()
 
