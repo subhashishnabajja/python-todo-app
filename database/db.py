@@ -1,18 +1,23 @@
 import sqlite3 
 import os
+import mysql.connector
+
+
 
 
 conn = sqlite3.connect(os.path.join(os.getcwd(), "data.db"))
 cur = conn.cursor()
 
 
+
 class TODO():
     def __init__(self):
         cur.execute("""
     CREATE TABLE IF NOT EXISTS todo  (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id INTEGER  PRIMARY KEY AUTOINCREMENT,
         text VARCHAR(255),
         date VARCHAR(255),
+        time VARCHAR(255),
         isDone INT DEFAULT 0
     ) """)
 
@@ -25,10 +30,10 @@ class TODO():
 
 
 
-    def addTodo(self, id, text, date):
+    def addTodo(self, text, date, time):
         cur.execute("""
-            INSERT INTO todo(id, text, date) VALUES(?, ?, ?)
-        """, (id, text, date))
+            INSERT INTO todo(text, date, time) VALUES(?, ?, ?)
+        """, (text, date, time))
         conn.commit()
 
     def updateTodo(id):
@@ -37,6 +42,22 @@ class TODO():
     def removeTodo(self, date = None):
         print(date)
         query = f"DELETE FROM todo WHERE date='{date}'"
+        cur.execute(query)
+        conn.commit()
+
+    def toggleDone(self, id = None):
+        status  = cur.execute(
+            f"""
+                SELECT isDone FROM todo WHERE id = {id}
+            """
+        ).fetchone()[0]
+        print(status)
+        query = f"""
+            UPDATE todo
+            SET isDone = {0 if status == 1 else 1}
+            WHERE
+                id = {id} 
+        """
         cur.execute(query)
         conn.commit()
 
