@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 from tkinter import ttk
 from components.Todo import TodoFrame
+from components.Auth import AuthForm
 
 
 
@@ -9,6 +10,7 @@ class MainApplication(tk.Tk):
 
     def __init__(self):
         super().__init__()
+
 
         # Creating the notebook frame
         self.notebook = ttk.Notebook(self)
@@ -28,6 +30,13 @@ class MainApplication(tk.Tk):
 
 
 if __name__ == "__main__":
+   
+    authForm = AuthForm()
+    authForm.geometry("640x500")
+    authForm.mainloop()
+  
+
     root = MainApplication()
     root.geometry("640x500")
     root.mainloop()
+

@@ -65,9 +65,8 @@ class TODO():
         except:
             print("Something went wrong while updating the records")
 
-    def removeTodo(self, date = None):
-        print(date)
-        query = f"DELETE FROM todo WHERE date='{date}'"
+    def removeTodo(self, id = None):
+        query = f"DELETE FROM todo WHERE id={id}"
         cur.execute(query)
         conn.commit()
 
@@ -93,3 +92,52 @@ class TODO():
             print("Someting went wrong while toggling")
 
 
+class USER:
+    def __init__(self):
+        try:
+            cur.execute(
+                """
+                CREATE TABLE IF NOT EXISTS user(
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(255) NOT NULL,
+                    email VARCHAR(255) NOT NULL UNIQUE,
+                    password VARCHAR(16) NOT NULL
+                )
+                """
+            )
+            conn.commit()
+
+        except:
+            pass
+
+        
+    def checkUserExists(self):
+        cur.execute(
+            """
+                SELECT id FROM user LIMIT 1;
+            """
+        )
+        
+        return cur.fetchone()
+    
+    def checkUserCredentials(self, email, password):
+        cur.execute(
+            f"""
+                SELECT * FROM user WHERE email='{email}';
+            """
+        )
+        user = cur.fetchone()
+        
+        if user and user[3] == password:
+            return True
+        else:
+            return False
+            
+
+    def createUser(self, name, email, password):
+        query = f"""
+            INSERT INTO user(name, email, password)
+            VALUES('{name}', '{email}', '{password}')
+        """
+        cur.execute(query)
+        conn.commit()
