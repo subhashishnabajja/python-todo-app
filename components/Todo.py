@@ -12,7 +12,8 @@ class TodoFrame(tk.Frame):
         super().__init__(container)
 
         # State variables
-        self.state = {"todos": [ todo[1] for todo in TODO.getTodos(date = datetime.datetime.now().strftime("%d/%m/%y"))], "date": tk.StringVar(value=datetime.datetime.now().strftime("%d/%m/%y"))}
+        self.state = {"todos": [ todo for todo in TODO.getTodos(date = datetime.datetime.now().strftime("%d/%m/%y"))], "date": tk.StringVar(value=datetime.datetime.now().strftime("%d/%m/%y"))}
+        print(self.state)
         self.input = tk.StringVar()
         self.todos = tk.StringVar(value = self.state["todos"])
         self.undoStack = []

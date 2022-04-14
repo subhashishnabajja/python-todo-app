@@ -1,9 +1,13 @@
 import sqlite3 
 import os
+import mysql.connector
+
+
 
 
 conn = sqlite3.connect(os.path.join(os.getcwd(), "data.db"))
 cur = conn.cursor()
+
 
 
 class TODO():
