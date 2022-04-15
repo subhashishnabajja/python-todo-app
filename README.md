@@ -36,7 +36,7 @@ python3 main.py
 
 When starting the app for the first time it asks you to create a user.
 
-![Create user Form](./images/create-vault.png)
+![Create vault Form](./images/create-vault.png)
 
 After creating the user you will be presented with main application window. You now add and delete todo. Enjoy ❤.
 
