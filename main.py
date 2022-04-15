@@ -31,9 +31,9 @@ class MainApplication(tk.Tk):
 
 if __name__ == "__main__":
    
-    #authForm = AuthForm()
-    #authForm.geometry("640x500")
-    #authForm.mainloop()
+    authForm = AuthForm()
+    authForm.geometry("640x500")
+    authForm.mainloop()
   
 
     root = MainApplication()
