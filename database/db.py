@@ -58,12 +58,16 @@ class TODO():
 
 
 
-    def updateTodo(id):
+    def updateTodo(self, id = None, text = None, newText = None):
         try:
-            cur.execute("""UPDATE todo SET done = 1 WHERE id = ?""", (id))
+            query = f"""
+                UPDATE todo SET text = '{newText}'
+                WHERE text='{text}'
+            """
+            cur.execute(query)
             conn.commit()
-        except:
-            print("Something went wrong while updating the records")
+        except Exception as e:
+            print(e)
 
     def removeTodo(self, id = None):
         query = f"DELETE FROM todo WHERE id={id}"

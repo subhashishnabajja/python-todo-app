@@ -6,7 +6,7 @@ from tkinter import messagebox
 
 class TodoList (tk.Frame):
 
-    def __init__(self, container, list=[], onDone = None, onDelete = None):
+    def __init__(self, container, list=[], onDone = None, onDelete = None, onUpdate = None):
         super().__init__(container)
 
         self.ListFrame = tk.Frame(self)
@@ -14,6 +14,7 @@ class TodoList (tk.Frame):
 
         self.onDone = onDone
         self.onDelete = onDelete
+        self.onUpdate = onUpdate
         self.list = list
 
 
@@ -48,10 +49,14 @@ class TodoList (tk.Frame):
         self.ActionsFrame.place(relheight=.2, rely=.8, relwidth=1)
 
         self.doneBtn = tk.Button(self.ActionsFrame, text = "Done", command=self.handleDone)
-        self.doneBtn.pack()
+        self.doneBtn.pack(expand=True, side=tk.RIGHT)
 
         self.deleteBtn = tk.Button(self.ActionsFrame, text = "Delete", command=self.handleDelete)
-        self.deleteBtn.pack()
+        self.deleteBtn.pack(expand=True, side=tk.LEFT)
+
+        self.editBtn = tk.Button(self.ActionsFrame, text = "Edit", command=self.handleUpdate)
+        self.editBtn.pack(expand=True)
+
 
 
 
@@ -75,19 +80,23 @@ class TodoList (tk.Frame):
         
     def handleDelete(self):
         try:
-            cur = self.treeview.focus()
-            
-            values = self.treeview.item(cur)['values']
-            self.onDelete({
-                "key": self.treeview.focus(),
-                "values": [
-                    values[0],
-                    0 if values[1] == "❎" else "1",
-                    values[2]
-                ]
-            })
+            self.onDelete(self.getCurrentSelection())
         except:
             messagebox.showinfo("Info", "Please select an item")
+    
+    def getCurrentSelection(self):
+            cur = self.treeview.focus()
+            values = self.treeview.item(cur)['values']
+            print(values)
+            return {
+                "key": cur,
+                "values": [
+                    values[0],
+                    values[1],
+                    0 if values[2] == "❎" else 1,
+                    values[3]
+                ]
+            }
     
     def updateTreeview(self, list = [],mode = "OVERIDE"):
         if mode == "OVERIDE":
@@ -101,7 +110,12 @@ class TodoList (tk.Frame):
                     list[i][1] 
                 ))
             
-    
+    def handleUpdate(self):
+        try:
+            self.onUpdate(self.getCurrentSelection())
+        except Exception as e:
+            print(e)
+            messagebox.showinfo("Info", "Please select an item")
 
     
 
