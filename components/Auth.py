@@ -33,7 +33,7 @@ class AuthForm(tk.Tk):
         # Password input config
         self.passwordLabel = tk.Label(self, text = "Password")
         self.passwordVariable = tk.StringVar(value="")
-        self.passwordInput = tk.Entry(self, textvariable=self.passwordVariable)
+        self.passwordInput = tk.Entry(self, textvariable=self.passwordVariable, show="*")
 
        
 

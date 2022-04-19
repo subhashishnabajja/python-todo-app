@@ -87,7 +87,7 @@ class TodoList (tk.Frame):
     def getCurrentSelection(self):
             cur = self.treeview.focus()
             values = self.treeview.item(cur)['values']
-            print(values)
+    
             return {
                 "key": cur,
                 "values": [

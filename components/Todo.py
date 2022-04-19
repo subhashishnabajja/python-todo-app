@@ -90,6 +90,7 @@ class TodoFrame(tk.Frame):
 
         print(item)
         toplevel = tk.Toplevel()
+        toplevel.title("Update todo")
         toplevel.geometry("250x100")
         textVariable = tk.StringVar(value=item["values"][3])
         textEntry = tk.Entry(toplevel, textvariable=textVariable, font=('Arial 14'))
